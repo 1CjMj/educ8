@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Users, MapPin, Clock, Plus, Edit, Trash2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Users, MapPin, Clock, Plus, Edit, Trash2, BookOpen } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import ClassroomView from './ClassroomView';
 
 interface ClassStudent {
   id: string;
@@ -31,7 +33,17 @@ interface ClassDetailProps {
 
 const ClassDetail: React.FC<ClassDetailProps> = ({ classData, onBack }) => {
   const { user } = useAuth();
+  const [view, setView] = useState<'info' | 'classroom'>('info');
   const canEdit = user?.role === 'admin' || user?.role === 'teacher' || user?.role === 'hod';
+
+  if (view === 'classroom') {
+    return (
+      <ClassroomView 
+        classData={classData} 
+        onBack={() => setView('info')} 
+      />
+    );
+  }
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -41,6 +53,22 @@ const ClassDetail: React.FC<ClassDetailProps> = ({ classData, onBack }) => {
           Back
         </Button>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{classData.name}</h1>
+      </div>
+
+      <div className="flex gap-2">
+        <Button 
+          variant={view === 'info' ? 'default' : 'outline'}
+          onClick={() => setView('info')}
+        >
+          Class Info
+        </Button>
+        <Button 
+          variant={view === 'classroom' ? 'default' : 'outline'}
+          onClick={() => setView('classroom')}
+        >
+          <BookOpen className="w-4 h-4 mr-2" />
+          Classroom
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
